@@ -133,12 +133,6 @@ chmod +x install.sh update.sh uninstall.sh
 ./install.sh
 ```
 
-Clone the repository:
-
-```bash
-git clone https://github.com/blooesky/Domoticz-Xiaomi-Purifier-4-Pro.git XiaomiPurifier4Pro
-```
-
 Restart Domoticz:
 
 ```bash
