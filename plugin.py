@@ -3,8 +3,7 @@
 # Local communication through python-miio (isolated .venv)
 
 """
-<plugin key="XiaomiPurifier4Pro" name="Xiaomi Smart Air Purifier 4 Pro" author="4D" version="1.0.7" wikilink="https://github.com/blooesky/Domoticz-Xiaomi-Purifier-4-Pro"
-        externallink="https://github.com/blooesky/Domoticz-Xiaomi-Purifier-4-Pro">
+<plugin key="XiaomiPurifier4Pro" name="Xiaomi Smart Air Purifier 4 Pro" author="Everpro / OpenAI" version="1.0.8">
     <description>
         <h2>Xiaomi Smart Air Purifier 4 Pro</h2>
         <p>Local LAN control for model zhimi.airp.vb4 using IP and token.</p>
@@ -51,18 +50,55 @@ PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def _add_venv_to_path():
-    """Load only the virtual environment located inside this plugin."""
-    candidates = [
-        os.path.join(PLUGIN_DIR, ".venv", "lib", "python3.11", "site-packages"),
-        os.path.join(PLUGIN_DIR, ".venv", "lib", "python3.12", "site-packages"),
-        os.path.join(PLUGIN_DIR, ".venv", "lib", "python3.10", "site-packages"),
-    ]
+    """Load site-packages from this plugin's isolated virtual environment.
+
+    Python versions are detected dynamically, so the plugin supports Python
+    3.10, 3.11, 3.12, 3.13 and future compatible versions without changes.
+    """
+    venv_dir = os.path.join(PLUGIN_DIR, ".venv")
+
+    if not os.path.isdir(venv_dir):
+        raise RuntimeError(
+            "Virtual environment not found. Run ./install.sh inside the plugin directory."
+        )
+
+    candidates = []
+
+    # Standard Linux virtual-environment locations.
+    for library_dir_name in ("lib", "lib64"):
+        library_dir = os.path.join(venv_dir, library_dir_name)
+        if not os.path.isdir(library_dir):
+            continue
+
+        for entry in sorted(os.listdir(library_dir), reverse=True):
+            if not entry.startswith("python"):
+                continue
+
+            site_packages = os.path.join(library_dir, entry, "site-packages")
+            if os.path.isdir(site_packages):
+                candidates.append(site_packages)
+
+    # Compatibility with a virtual environment copied from Windows.
+    windows_site_packages = os.path.join(venv_dir, "Lib", "site-packages")
+    if os.path.isdir(windows_site_packages):
+        candidates.append(windows_site_packages)
+
     for path in candidates:
-        if os.path.isdir(path) and path not in sys.path:
-            sys.path.insert(0, path)
+        # Prefer a path that actually contains the required miio package.
+        if os.path.isdir(os.path.join(path, "miio")):
+            if path not in sys.path:
+                sys.path.insert(0, path)
             return path
+
+    if candidates:
+        raise RuntimeError(
+            "The virtual environment exists, but python-miio is not installed. "
+            "Run ./install.sh inside the plugin directory."
+        )
+
     raise RuntimeError(
-        "Virtual environment not found. Run ./install.sh inside the plugin directory."
+        "No site-packages directory was found inside .venv. "
+        "Delete .venv and run ./install.sh again."
     )
 
 
