@@ -125,29 +125,9 @@ Open a terminal on the Domoticz server:
 
 ```bash
 cd /home/pi/domoticz/plugins
-```
-
-Clone the repository:
-
-```bash
 git clone https://github.com/blooesky/Domoticz-Xiaomi-Purifier-4-Pro.git XiaomiPurifier4Pro
-```
-
-Open the plugin directory:
-
-```bash
 cd XiaomiPurifier4Pro
-```
-
-Make the scripts executable:
-
-```bash
 chmod +x install.sh update.sh uninstall.sh
-```
-
-Run the installer:
-
-```bash
 ./install.sh
 ```
 
