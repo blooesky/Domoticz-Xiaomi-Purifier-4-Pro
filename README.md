@@ -117,13 +117,6 @@ Diagnostic devices can be disabled from the hardware configuration.
 * Xiaomi device token
 * Purifier and Domoticz server connected to the same local network
 
-On Debian or Raspberry Pi OS, install Python virtual environment support if necessary:
-
-```bash
-sudo apt update
-sudo apt install python3-venv
-```
-
 It is recommended to reserve the purifier IP address in the router.
 
 ## Installation
