@@ -1,0 +1,2 @@
+python-miio==0.5.12
+click==8.1.8
